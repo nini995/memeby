@@ -1,5 +1,5 @@
 // ==========================================
-// 短视频爆款模仿策略导航仪 - 核心逻辑
+// 短视频模仿策略导航仪 - 核心逻辑
 // ==========================================
 
 // 故事线节点切换 (全局控制)
@@ -52,6 +52,13 @@ let userData = {
     y1: 0, y2: 0
 };
 
+// 模式控制
+let isFastMode = false;
+function setFastMode(val) {
+    isFastMode = val;
+    console.log("FastMode set to:", isFastMode);
+}
+
 // 测评状态
 let quizData = {
     xa: 0,
@@ -64,6 +71,7 @@ let quizData = {
 function restartApp() {
     userData = { xa: 0, xb: 0, m1: 0, m2: 0, m3: 0, y1: 0, y2: 0 };
     quizData = { xa: 0, xb: 0, currentStep: 1, totalSteps: 3 };
+    isFastMode = false;
 
     // 恢复测评 UI 初始态
     document.getElementById('q1').classList.add('active');
@@ -77,7 +85,11 @@ function restartApp() {
     ['m1', 'm2', 'm3'].forEach(prefix => {
         ['1', '2', '3'].forEach(suffix => {
             const slider = document.getElementById(`${prefix}_${suffix}`);
-            if (slider) slider.value = 50;
+            if (slider) {
+                slider.value = 50;
+                // 同时触发一下 UI 更新，确保标签也显示为 50
+                updateAuditUI(prefix);
+            }
         });
     });
 
@@ -171,6 +183,12 @@ function nextPage(pageIndex) {
     const next = document.getElementById(`page-${pageIndex}`);
 
     if (!next) return;
+    if (currentActive === next) {
+        // 如果已在当前页，仅更新模式状态并直接返回，不触发转场动画
+        if (!isFastMode) next.classList.add('theory-mode');
+        else next.classList.remove('theory-mode');
+        return;
+    }
 
     if (currentActive) {
         currentActive.classList.remove('active', 'animate-up');
@@ -179,6 +197,12 @@ function nextPage(pageIndex) {
 
     next.classList.remove('slide-out');
     next.classList.add('active');
+
+    // 应用理论模式状态 (仅针对 P3-P13)
+    if (pageIndex >= 3) {
+        if (!isFastMode) next.classList.add('theory-mode');
+        else next.classList.remove('theory-mode');
+    }
 
     // 针对特定页面的背景切换与平滑过渡逻辑
     const bgContainer = document.getElementById('particles-js');
@@ -204,6 +228,7 @@ function nextPage(pageIndex) {
 
 
     }
+
 
     // 针对特定页面的初始化逻辑
     if (pageIndex == 3) {
@@ -267,22 +292,30 @@ function prevPage(pageIndex) {
     if (!prev) return;
 
     if (currentActive) {
-        currentActive.classList.remove('active', 'animate-up', 'slide-out');
+        currentActive.classList.remove('active', 'animate-up', 'slide-out', 'theory-mode');
     }
 
+    prev.classList.remove('slide-out');
     prev.classList.add('active');
     prev.classList.add('animate-up');
 
-    // 针对特定页面的背景切换逻辑 (同步更新背景)
+    // 应用理论模式状态
+    if (pageIndex >= 3) {
+        if (!isFastMode) prev.classList.add('theory-mode');
+        else prev.classList.remove('theory-mode');
+    }
+
+
+    // 针对特定页面的背景切换逻辑
     const bgContainer = document.getElementById('particles-js');
-    if (pageIndex === 1 || pageIndex === 2) {
-        bgContainer.classList.add('bg-vibe-1');
-        bgContainer.classList.remove('bg-vibe-2');
-    } else if (pageIndex === 3) {
-        bgContainer.classList.add('bg-vibe-2');
-        bgContainer.classList.remove('bg-vibe-1');
-    } else {
-        bgContainer.classList.remove('bg-vibe-1', 'bg-vibe-2');
+    if (bgContainer) {
+        // 使用 classList 而非 className 以免破坏其他类名
+        bgContainer.classList.remove('bg-vibe-1', 'bg-vibe-2', 'bg-vibe-diagnostic', 'bg-vibe-audit', 'bg-vibe-report');
+        if (pageIndex === 1 || pageIndex === 2) bgContainer.classList.add('bg-vibe-1');
+        else if (pageIndex === 3 || pageIndex === 4) bgContainer.classList.add('bg-vibe-2');
+        else if (pageIndex === 5 || pageIndex === '5-result') bgContainer.classList.add('bg-vibe-diagnostic');
+        else if (pageIndex >= 6 && pageIndex <= 9) bgContainer.classList.add('bg-vibe-audit');
+        else if (pageIndex >= 10) bgContainer.classList.add('bg-vibe-report');
     }
 
     // 自动滚动到顶部
@@ -409,7 +442,7 @@ function drawSimPaths() {
     }, 2500);
 }
 
-// 实时更新审计页面的 UI 反馈
+// 实时更新评议页面的 UI 反馈
 function updateAuditUI(prefix) {
     const s1 = parseInt(document.getElementById(`${prefix}_1`).value);
     const s2 = parseInt(document.getElementById(`${prefix}_2`).value);
@@ -476,22 +509,27 @@ function updateAuditUI(prefix) {
         }
     } else if (prefix === 'm3') {
         if (total > 200) {
-            message = "🚀 状态拉满！深度适配算法环境，您正处于流量爆发的前夕。";
+            message = "🔥 懂流量！你的内容完美切合了平台的流行节奏。这种高度的默契能让视频更快速被系统推给对的人，大爆几率翻倍！";
             statusClass = "good";
         } else if (total > 100) {
-            message = "🔹 稳定：基础适配度良好，符合平台分发逻辑。";
+            message = "✅ 稳住了：目前的打法策略很稳健，符合大部分用户的刷视频习惯。保持这种状态，流量基本盘会很稳。";
             statusClass = "info";
         } else {
-            message = "📈 建议：提升标签精准度与互动引导，这部分分值越高，自然流分发越广。";
+            message = "🔴 需改进：内容似乎还没跟上平台的流行步调。如果不优化标签或增加互动话题，视频很容易淹没在茫茫大海中。";
             statusClass = "warning";
         }
     }
 
     if (feedback) {
-        if (prefix === 'm3') {
-            // P8 保留数值实时变化即可，已经在 monitor-line 实现
-        } else {
-            feedback.innerHTML = `<div class="feedback-box ${statusClass}">${message}</div>`;
+        feedback.innerHTML = `<div class="feedback-box ${statusClass}">${message}</div>`;
+    }
+
+    // --- 新增：触觉反馈 (极端值震动) ---
+    const currentValues = [s1, s2, s3];
+    if (currentValues.some(v => v > 95 || v < 5)) {
+        if (window.navigator && window.navigator.vibrate) {
+            // 短暂脉冲震动
+            window.navigator.vibrate(10);
         }
     }
 }
@@ -585,18 +623,32 @@ function finalizeQuiz() {
         if (desc) desc.textContent = "您对流量趋势感知极其敏锐。通过「表现型模仿」（复刻爆款的视听符号与外壳形式），您能高效利用平台的“流量套利”机制，更容易触发算法推荐实现快速爆火。";
     }
 
-    // 2. 核心切换：进入独立的诊断结果揭晓页
-    nextPage('5-result');
+    // 2. 核心切换：进入独立的诊断结果揭晓页 (FastMode 下跳过)
+    if (isFastMode) {
+        nextPage(6);
+    } else {
+        nextPage('5-result');
+    }
 
-    // 3. 将测评结果映射到实际审计值 (赋值备份)
+    // 3. 将测评结果映射到实际评议值 (赋值备份)
     userData.xa_result = userData.xa;
     userData.xb_result = userData.xb;
 }
 
 
+// 结束评议，决定是否跳转 P9 或直接分析
+function finishAudit() {
+    if (isFastMode) {
+        startAnalysis();
+    } else {
+        nextPage(9);
+    }
+}
+
 // 启动分析与加载动画
 function startAnalysis() {
     nextPage(10); // 切换至流程中的第 10 页：过度动画页
+    // 模拟算法计算过程...
 
     // 收集原始拖拽得分 (平均 0-100)
     const getRawAvg = (prefix) => {
@@ -659,7 +711,7 @@ function startAnalysis() {
 
 function simulateProcessing() {
     const logs = [
-        "正在初始化「短视频爆款模仿策略导航仪」诊断引擎 v3.0...",
+        "正在初始化「短视频模仿策略导航仪」诊断引擎 v3.0...",
         "正在检索历史模因库特征向量 (Vector Search)...",
         "正在计算内容同质化冲突率 (Collision Detection)...",
         "PROCESS Model 4 中介效应链路深度拟合...",
@@ -707,7 +759,18 @@ function showResults() {
     const isXA = userData.xa >= userData.xb;
     document.getElementById('res-path-type').textContent = isXA ? "XA-M1-Y2 (深层认同)" : "XB-M2-Y1 (流量套利)";
 
-    // 渲染图表
+    // 基于模式调整 P11 交互性
+    const p11 = document.getElementById('page-11');
+    const pathCard = document.getElementById('path-card');
+    if (!isFastMode) {
+        p11.classList.add('theory-mode');
+        pathCard?.classList.add('interactive');
+    } else {
+        p11.classList.remove('theory-mode');
+        pathCard?.classList.remove('interactive');
+    }
+
+    // 渲染图表 (必须在容器可见后渲染，否则 canvas 尺寸可能异常)
     renderRadarChart();
 
     // 生成建议
@@ -717,7 +780,7 @@ function showResults() {
 function renderRadarChart() {
     const ctx = document.getElementById('radarChart').getContext('2d');
 
-    // 已经是 0-100 范围，直接取整展示
+    const isXA = userData.xa >= userData.xb;
     const mapTo100 = (val) => Math.round(val);
 
     new Chart(ctx, {
@@ -728,15 +791,15 @@ function renderRadarChart() {
                 ['高保真', '复制(M1)'],
                 ['算法迎合', '(M3)'],
                 ['平台驱动', '(XB)'],
-                ['同构异义', '变异(M2)']
+                ['主体重构', '变异(M2)']
             ],
             datasets: [{
                 label: '您的视频因子矩阵',
                 data: [
-                    mapTo100(userData.xa),
+                    isXA ? mapTo100(userData.xa) : 0, // 如果是 XB 驱动，XA 不计入矩阵
                     mapTo100(userData.m1),
                     mapTo100(userData.m3),
-                    mapTo100(userData.xb),
+                    !isXA ? mapTo100(userData.xb) : 0, // 如果是 XA 驱动，XB 不计入矩阵
                     mapTo100(userData.m2)
                 ],
                 backgroundColor: 'rgba(247, 37, 133, 0.4)',
@@ -1000,7 +1063,7 @@ function updateReportID(val) {
 }
 
 // -----------------------------------------
-// P4 AUDIT: 驱动力审计动态加载逻辑 (100%版)
+// P4 AUDIT: 驱动力评议动态加载逻辑 (100%版)
 // -----------------------------------------
 function triggerP4Audit() {
     // 触发进度条 CSS 动画
@@ -1091,3 +1154,126 @@ function animateNumber(id, start, end, duration) {
     };
     window.requestAnimationFrame(step);
 }
+
+// ==========================================
+// 调试工具逻辑
+// ==========================================
+function toggleDebugMenu() {
+    const menu = document.getElementById('debug-menu');
+    console.log('Toggling debug menu:', menu);
+    if (menu) menu.classList.toggle('active');
+}
+
+function debugJump(page) {
+    console.log('Jumping to page:', page);
+    if (typeof nextPage === 'function') {
+        nextPage(page);
+        toggleDebugMenu();
+    } else {
+        console.error('nextPage function not found!');
+    }
+}
+
+// ==========================================
+// 结局解读工具：分数详情弹窗
+// ==========================================
+const scoreDefinitions = {
+    'y1': {
+        icon: '<i class="fa-solid fa-eye text-primary"></i>',
+        title: '躯壳魅力 (Y1) 指数',
+        formula: 'Y1 = [M2 * W_m2] + [M3 * W_m3] * (1 + XB_boost)',
+        desc: '衡量视频的表现力与吸粉能力。基于您在表现型层面的“魔改”创新程度（M2）与对流量平台的算法适配（M3）计算得出。'
+    },
+    'y2': {
+        icon: '<i class="fa-solid fa-gem text-accent"></i>',
+        title: '内核韧性 (Y2) 指数',
+        formula: 'Y2 = [M1 * W_m1] * (1 + XA_boost) + Engagement_Factor',
+        desc: '衡量视频的情绪共鸣力与社交留存率。基于内容的基因型还原度（M1）与您作为创作者的心理驱动感（XA）深度拟合偏解。'
+    },
+    'm1': {
+        icon: '<i class="fa-solid fa-dna text-blue"></i>',
+        title: '基因型复刻度 (M1)',
+        formula: 'M1 = Σ(情绪+节奏+逻辑) / 3',
+        desc: '反映您对爆款种子“生命指纹”的精确还原。它是心理驱动型创作者（XA）触发社群共振的基础底盘。'
+    },
+    'm2': {
+        icon: '<i class="fa-solid fa-shuffle text-magenta"></i>',
+        title: '表现型变异度 (M2)',
+        formula: 'M2 = Σ(身份+场景+诉求) / 3',
+        desc: '反映您在模仿过程中的二次创作能力。高分代表了强烈的身份反差与场景重组，是平台驱动型创作者（XB）破圈的核心。'
+    },
+    'm3': {
+        icon: '<i class="fa-solid fa-hashtag text-purple"></i>',
+        title: '算法适配度 (M3)',
+        formula: 'M3 = Σ(标签+埋梗+预判) / 3',
+        desc: '反映内容与短视频平台（如抖音）推荐算法的动态契合度，决定了系统将模因推向更大流量池的效率。'
+    }
+};
+
+function showScoreDetail(type) {
+    // 仅在“原理模式”下生效
+    if (isFastMode) return;
+
+    const isXA = userData.xa >= userData.xb;
+    let data = { ...scoreDefinitions[type] };
+
+    // 动态代入真实权重公式 (基于 startAnalysis 中的逻辑)
+    if (type === 'y1') {
+        data.formula = isXA ?
+            `Y1 = 45 + (M2 * 0.3337) + (M3 * 0.1974)` :
+            `Y1 = 10 + (M1 * 0.2556) + (M2 * 0.4755) + (M3 * 0.1551)`;
+        data.desc += ` (当前判定为：${isXA ? 'XA 心理驱动路径' : 'XB 平台驱动路径'})`;
+    } else if (type === 'y2') {
+        data.formula = isXA ?
+            `Y2 = 45 + (M1 * 0.3934) + (M3 * 0.2556)` :
+            `Y2 = 15 + (M1 * 0.4941) + (M2 * 0.1604) + (M3 * 0.1629)`;
+        data.desc += ` (当前判定为：${isXA ? 'XA 心理驱动路径' : 'XB 平台驱动路径'})`;
+    }
+
+    if (!data) return;
+
+    document.getElementById('modal-icon-box').innerHTML = data.icon;
+    document.getElementById('modal-title-text').textContent = data.title;
+    document.getElementById('modal-formula-text').textContent = data.formula;
+    document.getElementById('modal-desc-text').textContent = data.desc;
+
+    const overlay = document.getElementById('score-modal');
+    overlay.classList.add('active');
+}
+
+
+function hideScoreModal() {
+    document.getElementById('score-modal').classList.remove('active');
+}
+
+// -----------------------------------------
+// 路径模式详解：基于 PROCESS Model 4 的推演 (折叠面板版)
+// -----------------------------------------
+function togglePathDetail() {
+    // 仅在“原理模式”下生效
+    if (isFastMode) return;
+
+    const content = document.getElementById('path-detail-content');
+    const isXA = userData.xa >= userData.xb;
+
+    if (content.classList.contains('active')) {
+        content.classList.remove('active');
+    } else {
+        const text = isXA ?
+            `<strong>XA 心理驱动路径：</strong><br>主公式：XA → M1 → Y2。内容深度依赖“情绪共鸣”。通过精准还原底层逻辑（M1），能有效触发圈层认同，由于不依赖变异，内核韧性（Y2）极高。` :
+            `<strong>XB 平台驱动路径：</strong><br>主公式：XB → M2 → Y1。内容依赖“流量套利”。通过大胆的叙事魔改（M2），利用算法的新鲜感推荐机制实现破圈，表现型魅力（Y1）是核心产出。`;
+
+        content.innerHTML = text;
+        content.classList.add('active');
+    }
+}
+
+// -----------------------------------------
+// 极速模式：解锁原理模式
+// -----------------------------------------
+function unlockTheoryMode() {
+    isFastMode = false;
+    // 重新调用 showResults 会帮我们更新 classes 和交互
+    showResults();
+}
+

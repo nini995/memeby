@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>抖音短视频爆款模仿策略导航仪</title>
+    <title>抖音短视频模仿策略导航仪</title>
     <!-- 引入外部字体与图标 -->
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap"
         rel="stylesheet">
@@ -18,6 +18,8 @@
 </head>
 
 <body>
+
+
     <!-- 动态背景层 (全局唯一) -->
     <div id="particles-js" class="background-container bg-vibe-1"></div>
     <div class="main-glass-overlay"></div>
@@ -29,10 +31,10 @@
         <section id="page-1" class="page active">
             <div class="hero-content" id="p1-main-hero">
                 <div class="logo-box animate-up delay-1">
-                    <img src="logo.png" alt="MemeGravity" class="brand-logo">
+                    <img src="logo.webp" alt="MemeGravity" class="brand-logo">
                 </div>
                 <h1 class="main-title animate-up delay-2">
-                    <span class="top-line">短视频爆款模仿</span><br>
+                    <span class="top-line">短视频模仿</span><br>
                     <span class="highlight-text">策略导航仪</span>
                 </h1>
                 <div class="hero-desc glass-card animate-up delay-4">
@@ -53,7 +55,7 @@
                 <h3 class="text-xs text-accent mb-15 text-center"><i class="fa-solid fa-id-card mr-5"></i> 创作者身份锁定</h3>
                 <div class="flex-column align-center">
                     <div class="avatar-uploader-p1" onclick="document.getElementById('avatar-upload').click()">
-                        <img id="avatar-preview" src="logo.png" alt="Avatar">
+                        <img id="avatar-preview" src="logo.webp" alt="Avatar">
                         <div class="upload-hint"><i class="fa-solid fa-camera"></i></div>
                         <input type="file" id="avatar-upload" accept="image/*" style="display:none"
                             onchange="previewAvatar(event)">
@@ -62,7 +64,7 @@
                         <input type="text" id="custom-id-input" placeholder="输入您的创作代号 (ID)" maxlength="15"
                             oninput="updateReportID(this.value)" class="custom-input-p1">
                     </div>
-                    <p class="text-xxs opacity-50 mt-15 text-center">系统将基于您的身份生成<br>专属「基因组诊断档案」</p>
+                    <p class="text-xxs opacity-50 mt-15 text-center">系统将基于您的身份生成<br>专属「诊断档案」</p>
                     <button class="btn-primary-glow w-full mt-20" onclick="confirmProfileAndStart()">
                         确认身份并进入系统
                     </button>
@@ -126,7 +128,15 @@
             </div>
 
             <div class="bottom-action text-center mt-30 pb-30">
-                <button class="btn-primary-glow w-full max-w-sm mb-10" onclick="nextPage(3)">解析诊断模型本体</button>
+                <button class="btn-primary-glow w-full max-w-sm mb-15 pulse-btn"
+                    onclick="setFastMode(true); nextPage(5)">
+                    <i class="fa-solid fa-bolt-lightning mr-10"></i>跳过理论，直接开启预测
+                </button>
+                <div class="mt-10">
+                    <button class="btn-ghost-subtle" onclick="setFastMode(false); nextPage(3)">
+                        解析诊断模型原理与架构 <i class="fa-solid fa-chevron-right ml-5"></i>
+                    </button>
+                </div>
             </div>
         </section>
 
@@ -213,14 +223,14 @@
             <!-- 交互引导提示 -->
             <div class="intro-swipe-hint">
                 <i class="fa-solid fa-angles-up"></i>
-                <span>划动或点击 开启模型审计</span>
+                <span>划动或点击 开启模型评议</span>
             </div>
         </section>
 
         <!-- 页面 4: 驱动力深度解析 (X 维度) -->
         <section id="page-4" class="page">
             <div class="page-header animate-up delay-1">
-                <h2>启动源动力审计</h2>
+                <h2>启动源动力评议</h2>
                 <p>解析“模仿”背后的双重驱动逻辑</p>
             </div>
 
@@ -271,7 +281,7 @@
 
             <div class="bottom-action mt-auto">
                 <button class="glow-primary-btn" onclick="nextPage(5)">
-                    生成审计诊断结果 <i class="fa-solid fa-wand-magic-sparkles ml-10"></i>
+                    生成评议诊断结果 <i class="fa-solid fa-wand-magic-sparkles ml-10"></i>
                 </button>
             </div>
         </section>
@@ -279,7 +289,7 @@
         <!-- 页面 5: 驱动力交互测评 (XA/XB 诊断) -->
         <section id="page-5" class="page mode-quiz">
             <div class="page-header">
-                <h2 class="reveal-text">源动力审计</h2>
+                <h2 class="reveal-text">源动力评议</h2>
             </div>
 
             <!-- 任务进度：状态标记 -->
@@ -388,7 +398,7 @@
 
                         <div class="result-action mt-30">
                             <button class="glow-primary-btn" onclick="nextPage(6)">
-                                进入阶段二：行为操作审计 <i class="fa-solid fa-arrow-right-long ml-10"></i>
+                                进入阶段二：行为操作评议 <i class="fa-solid fa-arrow-right-long ml-10"></i>
                             </button>
                         </div>
                     </div>
@@ -397,10 +407,10 @@
         </section>
 
 
-        <!-- 页面 6: 基因型复刻度审计 (M1) -->
+        <!-- 页面 6: 基因型复刻度评议 (M1) -->
         <section id="page-6" class="page">
             <div class="page-header">
-                <h2 class="reveal-text">基因型复刻度审计</h2>
+                <h2 class="reveal-text">基因型复制度评议</h2>
                 <p class="animate-up delay-2">还原模因“生命指纹”的精确程度</p>
             </div>
 
@@ -452,6 +462,9 @@
                 <div id="m1-feedback" class="audit-feedback-v animate-up delay-5">
                     正在执行模因基因序列比对...
                 </div>
+                <!-- 引导语：由 isFastMode 控制显示 -->
+                <p class="theory-hint-tag fast-hide mt-10 text-center opacity-50 text-xxs">提示：M1 与 M2 共同构成本次传播的 100%
+                    行为变量</p>
             </div>
 
             <div class="bottom-action flex-between mt-auto">
@@ -461,18 +474,17 @@
         </section>
 
 
-        <!-- 页面 7: 表现型变异度审计 (M2) -->
+        <!-- 页面 7: 表现型变异度评议 (M2) -->
         <section id="page-7" class="page">
             <div class="page-header">
-                <div class="glass-pill mb-10 animate-up delay-1">BEHAVIOR AUDIT: M2</div>
-                <h2 class="reveal-text">表现型变异度审计</h2>
-                <p class="animate-up delay-2">同构异义下的个性化溢出量</p>
+                <h2 class="reveal-text">表现型变异度评议</h2>
+                <p class="animate-up delay-2">同构异义下的个性化程度</p>
             </div>
 
             <div class="content-body audit-prism-theme m2-theme">
                 <div class="variance-display animate-up delay-2">
                     <div id="m2-variance-gauge" class="gauge-container">
-                        <div class="gauge-bar" id="fill-m2-total"></div>
+                        <div class="gauge-bar" id="fill-m2-total" style="width: 50%"></div>
                     </div>
                     <div class="gauge-label">当前变异指数: <span id="val-m2-total">50%</span></div>
                 </div>
@@ -481,7 +493,7 @@
                     <div class="spectrum-card">
                         <div class="card-icon-s"><i class="fa-solid fa-user-gear"></i></div>
                         <div class="card-meta">
-                            <label>主体身份突变</label>
+                            <label>主体人设 / 身份反差</label>
                             <input type="range" class="audit-slider-p7" id="m2_1" min="0" max="100" value="50"
                                 oninput="updateAuditUI('m2')">
                         </div>
@@ -489,7 +501,7 @@
                     <div class="spectrum-card">
                         <div class="card-icon-s"><i class="fa-solid fa-map-location-dot"></i></div>
                         <div class="card-meta">
-                            <label>空间语境置换</label>
+                            <label>拍摄场景 / 氛围魔改</label>
                             <input type="range" class="audit-slider-p7" id="m2_2" min="0" max="100" value="50"
                                 oninput="updateAuditUI('m2')">
                         </div>
@@ -497,7 +509,7 @@
                     <div class="spectrum-card">
                         <div class="card-icon-s"><i class="fa-solid fa-wand-sparkles"></i></div>
                         <div class="card-meta">
-                            <label>核心诉求异化</label>
+                            <label>内容核心 / 预期反转</label>
                             <input type="range" class="audit-slider-p7" id="m2_3" min="0" max="100" value="50"
                                 oninput="updateAuditUI('m2')">
                         </div>
@@ -508,6 +520,9 @@
                 <div id="m2-feedback" class="audit-feedback-prism animate-up delay-5">
                     正在分析表现型特征的偏离值...
                 </div>
+                <!-- 引导语 -->
+                <p class="theory-hint-tag fast-hide mt-10 text-center opacity-50 text-xxs">提示：M2 与 M1 共同构成本次传播的 100%
+                    行为变量</p>
             </div>
 
             <div class="bottom-action flex-between mt-auto">
@@ -517,11 +532,10 @@
         </section>
 
 
-        <!-- 页面 8: 算法适配度审计 (M3) -->
+        <!-- 页面 8: 算法适配度评议 (M3) -->
         <section id="page-8" class="page mode-audit">
             <div class="page-header">
-                <div class="glass-pill mb-10 animate-up delay-1">BEHAVIOR AUDIT: M3</div>
-                <h2 class="reveal-text">算法适配度审计</h2>
+                <h2 class="reveal-text">算法选择度评议</h2>
                 <p class="animate-up delay-2">基于流行趋势的自然选择优化</p>
             </div>
 
@@ -530,7 +544,7 @@
                     <div class="resonance-node active">
                         <div class="node-icon"><i class="fa-solid fa-satellite-dish"></i></div>
                         <div class="node-info">
-                            <label>受众算法观察</label>
+                            <label>标签加入的适配程度</label>
                             <input type="range" class="audit-slider-p8" id="m3_1" min="0" max="100" value="50"
                                 oninput="updateAuditUI('m3')">
                         </div>
@@ -538,7 +552,7 @@
                     <div class="resonance-node active">
                         <div class="node-icon"><i class="fa-solid fa-comments"></i></div>
                         <div class="node-info">
-                            <label>社交评论埋梗</label>
+                            <label>视频内容的槽点埋梗度</label>
                             <input type="range" class="audit-slider-p8" id="m3_2" min="0" max="100" value="50"
                                 oninput="updateAuditUI('m3')">
                         </div>
@@ -546,7 +560,7 @@
                     <div class="resonance-node active">
                         <div class="node-icon"><i class="fa-solid fa-chart-line"></i></div>
                         <div class="node-info">
-                            <label>热点效应预判</label>
+                            <label>评论区的社交互动度</label>
                             <input type="range" class="audit-slider-p8" id="m3_3" min="0" max="100" value="50"
                                 oninput="updateAuditUI('m3')">
                         </div>
@@ -560,17 +574,20 @@
                         <span id="val-m3-total">50%</span>
                     </div>
                     <div class="monitor-graph">
-                        <div class="graph-bar" id="fill-m3-total"></div>
+                        <div class="graph-bar" id="fill-m3-total" style="width: 50%"></div>
                     </div>
                     <div id="m3-feedback" class="monitor-hint mt-10" style="font-size: 11px; opacity: 0.8;">
-                        请滑动上方滑块开始「算法环境」深度审计...
+                        请滑动上方滑块开始「算法环境」深度评议...
                     </div>
+                    <!-- 引导语 -->
+                    <p class="theory-hint-tag fast-hide mt-10 text-center opacity-50 text-xxs">提示：该评估项独占由算法决定的 100% 外部权重
+                    </p>
                 </div>
             </div>
 
             <div class="bottom-action flex-between mt-auto">
                 <button class="btn-secondary-v" onclick="prevPage(7)">上一步</button>
-                <button class="btn-primary-v" onclick="nextPage(9)">路径拟合诊断</button>
+                <button class="btn-primary-glow w-full ml-10" onclick="finishAudit()">开始路径模拟推演</button>
             </div>
         </section>
 
@@ -578,7 +595,6 @@
         <!-- 页面 9: 中介效应路径模拟 (基于论文三层最终模型图) -->
         <section id="page-9" class="page">
             <div class="page-header animate-up delay-1">
-                <div class="glass-pill mb-10 text-xs">SIMULATION: PATH FITTING</div>
                 <h2>中介效应路径模拟</h2>
                 <p>正在基于三层模型拟合传播系数</p>
             </div>
@@ -640,8 +656,7 @@
         <!-- 页面 11: 诊断报告大屏 (Result Dashboard Premium) -->
         <section id="page-11" class="page">
             <div class="page-header animate-up delay-1">
-                <div class="glass-pill mb-10 text-xs">MODEL: MEME-GRAVITY V3</div>
-                <h2>短视频爆款预测报告</h2>
+                <h2>短视频预测报告</h2>
                 <p>基于中介效应模型 (Mediation Model) 实时运算结果</p>
             </div>
 
@@ -650,13 +665,15 @@
                 <div class="score-card glass-card span-2 glow-border">
                     <div class="score-label">核心影响力评分 Profile (Y1-Y2 Index)</div>
                     <div class="flex-between align-end">
-                        <div class="score-item">
+                        <div class="score-item clickable-score" onclick="showScoreDetail('y2')">
                             <span class="score-value" id="y2-score">--</span>
-                            <div class="label-xs mt-5">基因型内核稳定 (Y2)</div>
+                            <div class="label-xs mt-5">基因型内核稳定 (Y2) <i class="fa-solid fa-circle-info opacity-30"></i>
+                            </div>
                         </div>
-                        <div class="score-item text-right">
+                        <div class="score-item text-right clickable-score" onclick="showScoreDetail('y1')">
                             <span class="score-value text-accent" id="y1-score">--</span>
-                            <div class="label-xs mt-5">表现型躯壳满意 (Y1)</div>
+                            <div class="label-xs mt-5">表现型躯壳满意 (Y1) <i class="fa-solid fa-circle-info opacity-30"></i>
+                            </div>
                         </div>
                     </div>
                     <div class="progress-mini mt-15">
@@ -668,25 +685,34 @@
                         <div class="mb-5"><i class="fa-solid fa-fire text-accent mr-5"></i> <strong>Y1
                                 (躯壳满意)</strong>：预测视频在公域流量池的短期吸睛力与爆款转化潜能。</div>
                         <div><i class="fa-solid fa-anchor text-blue mr-5"></i> <strong>Y2
-                                (内核韧性)</strong>：评估视频在特定圈层中的长期共鸣深度与文化认同存留率。</div>
+                                (内核稳定)</strong>：评估视频在特定圈层中的长期共鸣深度与文化认同存留率。</div>
                     </div>
                 </div>
             </div>
 
-            <div class="path-matching-card glass-card mb-20 animate-up delay-3">
-                <div class="score-label mb-10"><i class="fa-solid fa-link mr-5"></i> 传播路径模式 Path Mode</div>
+            <div class="path-matching-card glass-card mb-20 animate-up delay-3" id="path-card"
+                onclick="togglePathDetail()">
+                <div class="score-label mb-10 flex-between">
+                    <span><i class="fa-solid fa-link mr-5"></i> 传播路径模式 Path Mode</span>
+                    <div class="theory-only-hint"><i class="fa-solid fa-circle-question"></i></div>
+                </div>
                 <div class="fitting-row">
                     <div class="fitting-item">
                         <span class="label">主路径拟合</span>
-                        <span class="value" id="res-path-type">--</span>
+                        <span class="value" id="res-path-type" style="font-size: 16px;">--</span>
                     </div>
+                </div>
+                <div id="path-detail-content" class="collapse-content">
+                    <!-- Dynamic Content -->
                 </div>
             </div>
 
             <!-- 合并自 P12: 因子矩阵与建议 (还原版) -->
-            <div class="chart-container glass-card mb-20 animate-up delay-4" style="height: 280px;">
+            <div id="radar-container" class="chart-container glass-card mb-20 animate-up delay-4"
+                style="height: 280px;">
                 <canvas id="radarChart"></canvas>
             </div>
+
 
             <div class="advice-container glass-card p-15 animate-up delay-5 mb-20">
                 <h3 class="text-sm mb-10"><i class="fa-solid fa-flag-checkered text-accent mr-5"></i> 诊断结论：您的生态位归属</h3>
@@ -696,6 +722,14 @@
             </div>
 
             <div class="bottom-action animate-up delay-5">
+                <!-- 极速模式下的解锁按钮 -->
+                <div id="unlock-theory-wrap" class="fast-only-hint mb-10">
+                    <button class="btn-outline w-full"
+                        style="border-color: var(--accent-color); color: var(--accent-color); background: rgba(247, 37, 133, 0.05); padding: 12px;"
+                        onclick="unlockTheoryMode()">
+                        <i class="fa-solid fa-unlock-keyhole mr-5"></i> 查看深度诊断图谱 (原理模式)
+                    </button>
+                </div>
                 <button class="btn-primary-glow w-full" onclick="nextPage(12)">
                     保存为深度诊断海报 <i class="fa-solid fa-file-export ml-10"></i>
                 </button>
@@ -706,9 +740,7 @@
         <!-- 页面 12: 极致专业长图报告 (Final Premium Report) -->
         <section id="page-12" class="page">
             <div class="page-header animate-up delay-1">
-                <div class="glass-pill mb-10">GENOTYPE REPORT</div>
-                <h2>模因基因组诊断书</h2>
-                <p>Meme Genotype & Phenotype Identification</p>
+                <h2>模因诊断书</h2>
             </div>
 
             <!-- 已移除 P12 的定制面板，改为在 P1 预设 -->
@@ -722,35 +754,35 @@
                             <div class="id-tag text-primary" id="report-id-tag">ID: MG-2026-X8</div>
                             <div class="date-tag" id="report-date">2026.04.07</div>
                         </div>
-                        <img src="logo.png" alt="Logo" class="report-custom-avatar" id="report-avatar">
+                        <img src="logo.webp" alt="Logo" class="report-custom-avatar" id="report-avatar">
                     </div>
 
                     <!-- Section 1: Driver Profile -->
                     <div class="report-block mt-20">
-                        <div class="block-title">01 / 源动力性状 Driver Profile</div>
+                        <div class="block-title">01 / 源动力</div>
                         <div class="driver-result-glow" id="final-driver-type">--</div>
                     </div>
 
                     <!-- Section 2: Meme DNA (Visualize M1-M3) -->
                     <div class="report-block mt-20">
-                        <div class="block-title">02 / 模因基因序列 Meme DNA</div>
+                        <div class="block-title">02 / 模因基因序列</div>
                         <div class="dna-container">
-                            <div class="dna-item">
-                                <span class="dna-label">M1 高保真度</span>
+                            <div class="dna-item" onclick="showScoreDetail('m1')">
+                                <span class="dna-label">基因稳定性</span>
                                 <div class="dna-bar-wrap">
                                     <div class="dna-bar bg-blue" id="dna-m1"></div>
                                 </div>
                                 <span class="dna-val" id="final-m1-val">--</span>
                             </div>
-                            <div class="dna-item">
-                                <span class="dna-label">M2 变异指数</span>
+                            <div class="dna-item" onclick="showScoreDetail('m2')">
+                                <span class="dna-label">表型变异度</span>
                                 <div class="dna-bar-wrap">
                                     <div class="dna-bar bg-magenta" id="dna-m2"></div>
                                 </div>
                                 <span class="dna-val" id="final-m2-val">--</span>
                             </div>
-                            <div class="dna-item">
-                                <span class="dna-label">M3 算法粘性</span>
+                            <div class="dna-item" onclick="showScoreDetail('m3')">
+                                <span class="dna-label">算法粘性</span>
                                 <div class="dna-bar-wrap">
                                     <div class="dna-bar bg-purple" id="dna-m3"></div>
                                 </div>
@@ -761,15 +793,17 @@
 
                     <!-- Section 3: SEM Outcome -->
                     <div class="report-block mt-20">
-                        <div class="block-title">03 / 传播效应预测 Outcome</div>
+                        <div class="block-title">03 / 传播效应预测</div>
                         <div class="outcome-flex">
-                            <div class="outcome-box">
+                            <div class="outcome-box" onclick="showScoreDetail('y1')">
                                 <div class="box-val" id="final-y1-score">--</div>
-                                <div class="box-label">躯壳魅力 Y1</div>
+                                <div class="box-label">躯壳满意 Y1 <i
+                                        class="fa-solid fa-circle-info text-xxs opacity-30"></i></div>
                             </div>
-                            <div class="outcome-box">
+                            <div class="outcome-box" onclick="showScoreDetail('y2')">
                                 <div class="box-val text-accent" id="final-y2-score">--</div>
-                                <div class="box-label">内核韧性 Y2</div>
+                                <div class="box-label">内核稳定 Y2 <i
+                                        class="fa-solid fa-circle-info text-xxs opacity-30"></i></div>
                             </div>
                         </div>
                     </div>
@@ -781,27 +815,25 @@
                 <button class="btn-primary-glow w-full" onclick="saveToImage()"><i class="fa-solid fa-camera mr-5"></i>
                     截图保存报告</button>
                 <button class="btn-outline w-full" onclick="nextPage(13)"><i class="fa-solid fa-book-open mr-5"></i>
-                    查阅《全案 6 大生态位结局》概览</button>
+                    查阅《 6 大生态位结局》概览</button>
             </div>
 
             <div class="bottom-action mt-auto text-center pb-20 mt-15">
-                <span class="text-xs text-secondary opacity-50 underline" onclick="restartApp()">重新测评模型</span>
             </div>
         </section>
 
         <!-- 页面 13: 6大手稿档案 (The 6 Endings Guide) -->
         <section id="page-13" class="page scrollable-page pb-30">
             <div class="page-header animate-up delay-1">
-                <div class="glass-pill mb-10 text-xs">ARCHIVE: THE 6 ENDINGS</div>
-                <h2>全案策略归宿矩阵</h2>
+                <h2>6 大生态位结局</h2>
                 <p>基于 PROCESS Model 4 平行中介效应演化出的 6 种极态</p>
             </div>
 
             <div class="endings-container p-15 animate-up delay-2">
                 <!-- XA 宇宙 -->
                 <div class="ending-universe mb-20">
-                    <h3 class="mb-10 text-sm border-b pb-5 text-blue"><i class="fa-solid fa-heart-pulse mr-5"></i> 宇宙
-                        A：心理感觉驱动 (XA)</h3>
+                    <h3 class="mb-10 text-sm border-b pb-5 text-blue"><i class="fa-solid fa-heart-pulse mr-5"></i> 驱动力
+                        A：心理驱动 (XA)</h3>
 
                     <div class="glass-card p-15 mb-10 border-l-blue">
                         <div class="flex-between mb-5">
@@ -840,7 +872,7 @@
                 <!-- XB 宇宙 -->
                 <div class="ending-universe mb-20 mt-30">
                     <h3 class="mb-10 text-sm border-b pb-5 text-purple"><i class="fa-solid fa-bolt-lightning mr-5"></i>
-                        宇宙 B：平台流量驱动 (XB)</h3>
+                        驱动力 B：平台驱动 (XB)</h3>
 
                     <div class="glass-card p-15 mb-10 border-l-purple">
                         <div class="flex-between mb-5">
@@ -880,15 +912,31 @@
             <div class="bottom-action text-center mt-20 mb-30 pb-30 px-15">
                 <button class="btn-outline w-full mb-15" onclick="nextPage(12)"><i
                         class="fa-solid fa-arrow-left mr-5"></i> 返回我的个人诊断鉴定书</button>
-                <div class="text-xs text-secondary opacity-50 underline" onclick="restartApp()">重新开启模拟推演</div>
             </div>
         </section>
     </main>
 
     <!-- 粒子特效与主逻辑控制脚本 -->
     <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
-    <script src="app.js"></script>
+    <script src="app.js?v=debug"></script>
+
     <div id="path-tooltip" class="path-tooltip">仅平台驱动显著</div>
+
+    <!-- 评分详情弹窗 (仅在原理模式生效) -->
+    <div id="score-modal" class="score-modal-overlay" onclick="hideScoreModal()">
+        <div class="score-modal-card" onclick="event.stopPropagation()">
+            <div class="modal-close" onclick="hideScoreModal()">&times;</div>
+            <div id="modal-icon-box" class="modal-icon"></div>
+            <h3 id="modal-title-text" class="modal-title">评分详情</h3>
+            <div id="modal-formula-text" class="modal-formula"></div>
+            <p id="modal-desc-text" class="modal-desc"></p>
+            <div class="mt-20 text-center">
+                <button class="btn-ghost-subtle" style="font-size: 11px; opacity: 0.5;"
+                    onclick="hideScoreModal()">点击空白处关闭</button>
+            </div>
+        </div>
+    </div>
 </body>
+
 
 </html>
