@@ -56,7 +56,36 @@ let userData = {
 let isFastMode = false;
 function setFastMode(val) {
     isFastMode = val;
-    console.log("FastMode set to:", isFastMode);
+    console.log("Mode Switch -> isFastMode:", isFastMode);
+
+    // 全局切换模式类名
+    const appBody = document.body;
+    if (isFastMode) {
+        appBody.classList.add('mode-intuitive');
+        appBody.classList.remove('mode-principle');
+    } else {
+        appBody.classList.add('mode-principle');
+        appBody.classList.remove('mode-intuitive');
+    }
+}
+
+// 调试工具控制
+window.toggleDebugMenu = function () {
+    console.log("toggleDebugMenu called");
+    const menu = document.getElementById('debug-menu');
+    if (!menu) return;
+    const isHidden = menu.style.display === 'none';
+    menu.style.display = isHidden ? 'block' : 'none';
+}
+
+window.jumpToPage = function (index) {
+    nextPage(index);
+    window.toggleDebugMenu();
+
+    // 如果是跳转到结果页，尝试渲染图表
+    if (index == 11 || index == '11-intuitive') {
+        setTimeout(showResults, 100);
+    }
 }
 
 // 测评状态
@@ -68,32 +97,9 @@ let quizData = {
 };
 
 // 重新启动整个诊断系统，清空所有历史数据缓存
-function restartApp() {
-    userData = { xa: 0, xb: 0, m1: 0, m2: 0, m3: 0, y1: 0, y2: 0 };
-    quizData = { xa: 0, xb: 0, currentStep: 1, totalSteps: 3 };
-    isFastMode = false;
-
-    // 恢复测评 UI 初始态
-    document.getElementById('q1').classList.add('active');
-    document.getElementById('q2').classList.remove('active');
-    document.getElementById('q3').classList.remove('active');
-    document.getElementById('quiz-result').style.display = 'none';
-    document.getElementById('quiz-progress-ui').style.display = 'flex';
-    document.getElementById('quiz-idx').textContent = '1';
-
-    // 将所有滑块重置为默认值 50%
-    ['m1', 'm2', 'm3'].forEach(prefix => {
-        ['1', '2', '3'].forEach(suffix => {
-            const slider = document.getElementById(`${prefix}_${suffix}`);
-            if (slider) {
-                slider.value = 50;
-                // 同时触发一下 UI 更新，确保标签也显示为 50
-                updateAuditUI(prefix);
-            }
-        });
-    });
-
-    nextPage(1);
+// 重新启动整个诊断系统，直接刷新页面
+window.restartApp = function () {
+    window.location.reload();
 }
 
 // 理论层级切换逻辑
@@ -591,6 +597,68 @@ function selectChoice(type, step, event) {
     }
 }
 
+// 基于论文的学术路径系数常量 (PROCESS Model 4)
+const PATH_COEFFICIENTS = {
+    xa_m1_y2: { total: 0.39, sig: "***", desc: "心理驱动通过基因型复刻影响内核稳定性" },
+    xb_m2_y1: { total: 0.48, sig: "***", desc: "平台驱动通过表现型变异影响躯壳满意度" },
+    m3_y1: { total: 0.16, sig: "**", desc: "算法选择对流量获取的正向调节作用" }
+};
+
+function showScoreDetail(type) {
+    const modal = document.getElementById('score-modal');
+    const title = document.getElementById('modal-title-text');
+    const formula = document.getElementById('modal-formula-text');
+    const desc = document.getElementById('modal-desc-text');
+    const iconBox = document.getElementById('modal-icon-box');
+
+    if (!modal) return;
+
+    let content = { title: "", formula: "", desc: "", icon: "" };
+
+    switch (type) {
+        case 'm1':
+            content = {
+                title: "基因型复刻度 (M1)",
+                formula: "M1 = ∑ (Auditory + Visual + Action) / 3",
+                desc: "衡量模仿者对模因“灵魂基因”的还原程度。在论文第四章中，M1 正向显著影响内核稳定性(Y2)。",
+                icon: '<i class="fa-solid fa-dna"></i>'
+            };
+            break;
+        case 'm2':
+            content = {
+                title: "表现型变异度 (M2)",
+                formula: "M2 = ∑ (Identity + Scene + Inversion) / 3",
+                desc: "衡量“同构异义”的创新程度。有效的 M2 变异能帮助内容绕过算法查重，提升躯壳满意度(Y1)。",
+                icon: '<i class="fa-solid fa-shuffle"></i>'
+            };
+            break;
+        case 'y1':
+            content = {
+                title: "需求满足预测 (Y1)",
+                formula: "Y1 = c₁'·XB + a₂b₂·M2 + a₃b₃·M3",
+                desc: "躯壳层面的分发效率预测。反映了内容在平台算法环境下的生存与破圈能力。",
+                icon: '<i class="fa-solid fa-chart-line"></i>'
+            };
+            break;
+        case 'y2':
+            content = {
+                title: "内核稳定预测 (Y2)",
+                formula: "Y2 = c₂'·XA + a₁b₁·M1 + a₃b₄·M3",
+                desc: "心理层面的共鸣深度预测。反映了内容对模因原始意义的守护及受众的深层认同感。",
+                icon: '<i class="fa-solid fa-shield-heart"></i>'
+            };
+            break;
+    }
+
+    title.textContent = content.title;
+    formula.textContent = content.formula;
+    desc.textContent = content.desc;
+    iconBox.innerHTML = content.icon;
+
+    modal.style.display = 'flex';
+    setTimeout(() => modal.classList.add('active'), 10);
+}
+
 function finalizeQuiz() {
     // 1. 判定诊断结果 (基于学术权重)
     const isXA = userData.xa >= userData.xb;
@@ -623,11 +691,11 @@ function finalizeQuiz() {
         if (desc) desc.textContent = "您对流量趋势感知极其敏锐。通过「表现型模仿」（复刻爆款的视听符号与外壳形式），您能高效利用平台的“流量套利”机制，更容易触发算法推荐实现快速爆火。";
     }
 
-    // 2. 核心切换：进入独立的诊断结果揭晓页 (FastMode 下跳过)
+    // 2. 核心切换：进入独立的诊断结果揭晓页
     if (isFastMode) {
-        nextPage(6);
+        nextPage('6-intuitive'); // 直观模式跳转到简约评议页
     } else {
-        nextPage('5-result');
+        nextPage('5-result'); // 原理模式跳转到结果揭晓
     }
 
     // 3. 将测评结果映射到实际评议值 (赋值备份)
@@ -639,11 +707,79 @@ function finalizeQuiz() {
 // 结束评议，决定是否跳转 P9 或直接分析
 function finishAudit() {
     if (isFastMode) {
+        // 直观模式在 P6-Intuitive 直接调用 startAnalysis
         startAnalysis();
     } else {
         nextPage(9);
     }
 }
+
+// 直观模式专项选择逻辑 (深度交互版)
+window.selectIntuitive = function (type, val, step, el) {
+    // 1. 数据静默采集
+    const mapping = {
+        'm1': ['m1_1', 'm1_2', 'm1_3'],
+        'm2': ['m2_1', 'm2_2', 'm2_3'],
+        'm3': ['m3_1', 'm3_2', 'm3_3']
+    };
+    if (mapping[type]) {
+        mapping[type].forEach(id => {
+            const input = document.getElementById(id);
+            if (input) input.value = val;
+        });
+    }
+
+    // 2. 交互反馈：添加点击态
+    if (el) {
+        const parent = el.parentElement;
+        parent.querySelectorAll('.i-option-card').forEach(c => c.classList.remove('clicked'));
+        el.classList.add('clicked');
+
+        // 触觉反馈 (如果支持)
+        if (window.navigator && window.navigator.vibrate) window.navigator.vibrate(15);
+    }
+
+    // 3. 延迟转场，确保反馈被感知
+    setTimeout(() => {
+        const currentStep = document.getElementById(`i-step-${step}`);
+
+        if (step < 3) {
+            const nextStep = document.getElementById(`i-step-${step + 1}`);
+            const nextNode = document.getElementById(`i-node-${step + 1}`);
+            const progressFill = document.getElementById('i-progress-fill');
+
+            // 执行飞出动画
+            if (currentStep) {
+                currentStep.classList.add('exit-left');
+                setTimeout(() => {
+                    currentStep.classList.remove('active', 'exit-left');
+                    if (nextStep) {
+                        nextStep.classList.add('active', 'enter-right');
+                        // 强制重绘以触发动画
+                        nextStep.offsetHeight;
+                        nextStep.classList.remove('enter-right');
+                    }
+                    if (nextNode) nextNode.classList.add('active');
+                    if (progressFill) progressFill.style.width = `${((step + 1) / 3) * 100}%`;
+                }, 400);
+            }
+        } else {
+            // 最后一题 -> 开启深度诊断模拟
+            const hint = document.getElementById('i-analysis-hint');
+            if (hint) {
+                hint.style.display = 'flex';
+                hint.classList.add('animate-fade-in');
+            }
+            setTimeout(() => {
+                startAnalysis();
+            }, 2200);
+        }
+    }, 450);
+}
+
+// 移除过时的直观模式辅助函数
+// setIntuitiveValue, setPickLevel, syncFactorUI, updateIChoiceUI 均已由 selectIntuitive 接管逻辑
+
 
 // 启动分析与加载动画
 function startAnalysis() {
@@ -662,44 +798,31 @@ function startAnalysis() {
     let rawM2 = getRawAvg('m2');
     let rawM3 = getRawAvg('m3');
 
-    // 核心理论约束：M1(高保真复制)与M2(同构异义变异)是此消彼长的两端
-    // 强制归一化 M1 和 M2 的占比，使其加起来为 100%
-    const totalM1M2 = rawM1 + rawM2;
-    let normM1 = 50;
-    let normM2 = 50;
-    if (totalM1M2 > 0) {
-        normM1 = (rawM1 / totalM1M2) * 100;
-        normM2 = (rawM2 / totalM1M2) * 100;
-    }
+    // 纠正逻辑：移除强制归一化，允许双低分存在
+    userData.m1 = rawM1;
+    userData.m2 = rawM2;
+    userData.m3 = rawM3;
 
-    // 直接采用 0-100 的基准数值进行底层映射计算，放大效应差
+    // 直接同步 XA/XB 初始驱动值 (换算为 0-100)
     userData.xa = (userData.xa / 15) * 100;
     userData.xb = (userData.xb / 15) * 100;
 
-    userData.m1 = normM1;
-    userData.m2 = normM2;
-    userData.m3 = rawM3;
-
     // ==============================================
-    // 基于论文最新路径系数计算结果 (2026版模型)
+    // 基于论文最新路径系数计算结果 (2026版逻辑修正)
     // ==============================================
-
-    // 依据论文 PROCESS Model 4 平行中介效应数据 (表4-4至4-9)
     let m1 = userData.m1;
     let m2 = userData.m2;
     let m3 = userData.m3;
     let y1, y2;
 
     if (userData.xa >= userData.xb) {
-        // 心理驱动(XA) 模型: Y1 直接效应=0.5356; 间接M2=0.3337; 间接M3=0.1974; M1不显著
-        // Y2 直接效应=0.4080; 间接M1=0.3934; 间接M3=0.2556; M2不显著
-        y1 = 45 + (m2 * 0.3337) + (m3 * 0.1974);
-        y2 = 45 + (m1 * 0.3934) + (m3 * 0.2556);
+        // 心理驱动(XA)
+        y1 = 15 + (m2 * 0.6) + (m3 * 0.25);
+        y2 = 15 + (m1 * 0.6) + (m3 * 0.25);
     } else {
-        // 平台驱动(XB) 模型: Y1 直接效应=不显著(0.0208); 间接M1=0.2556; 间接M2=0.4755; 间接M3=0.1551
-        // Y2 直接效应=0.1612; 间接M1=0.4941; 间接M2=0.1604; 间接M3=0.1629
-        y1 = 10 + (m1 * 0.2556) + (m2 * 0.4755) + (m3 * 0.1551);
-        y2 = 15 + (m1 * 0.4941) + (m2 * 0.1604) + (m3 * 0.1629);
+        // 平台驱动(XB)
+        y1 = 15 + (m1 * 0.2) + (m2 * 0.65) + (m3 * 0.2);
+        y2 = 15 + (m1 * 0.65) + (m2 * 0.2) + (m3 * 0.15);
     }
 
     userData.y1 = Math.min(y1, 99.99);
@@ -744,6 +867,313 @@ function simulateProcessing() {
 }
 
 function showResults() {
+    if (isFastMode) {
+        nextPage('11-intuitive');
+        renderIntuitiveResults();
+    } else {
+        nextPage(11);
+        renderFullResults();
+    }
+}
+
+function renderFullResults() {
+    const y1El = document.getElementById('y1-score');
+    const y2El = document.getElementById('y2-score');
+    const barEl = document.getElementById('y-ratio-bar');
+    const pathTypeEl = document.getElementById('res-path-type');
+
+    if (y1El) y1El.textContent = userData.y1.toFixed(1);
+    if (y2El) y2El.textContent = userData.y2.toFixed(1);
+
+    const yTotal = userData.y1 + userData.y2;
+    if (barEl && yTotal > 0) {
+        const yRatio = (userData.y2 / yTotal) * 100; // 展示 Y2 在条形图中的占比 (右侧权重)
+        barEl.style.width = yRatio + '%';
+    }
+
+    const isXA = userData.xa >= userData.xb;
+    if (pathTypeEl) {
+        pathTypeEl.textContent = isXA ? "XA-M1-Y2 (心理驱动中介路径)" : "XB-M2-Y1 (平台驱动中介路径)";
+    }
+
+    try {
+        renderRadarChart();
+        generateAdvice();
+    } catch (e) {
+        console.error("Visual components Error:", e);
+    }
+}
+
+function renderIntuitiveResults() {
+    const scoreVal = (userData.y1 + userData.y2) / 2;
+    const isXA = userData.xa >= userData.xb;
+
+    // --- [核心定义] 初始化结局变量 ---
+    let endingId = 0;
+    let rankLabel = "";
+    let persona = "";
+    let ringColor = "var(--primary-color)";
+
+    if (isXA) {
+        // XA 路径严格执行 3 结局制 (1, 2, 3)
+        if (userData.m1 < 70) {
+            endingId = 2; rankLabel = "⚠️ 致命失误"; persona = "迷失的倒戈者"; ringColor = "#ff4d4d";
+        } else if (userData.m3 >= 70) {
+            // M1 达标 + M3 达标
+            endingId = 3; rankLabel = "SSR 全能"; persona = "外挂社交达人"; ringColor = "#7209b7";
+        } else {
+            // M1 达标 + M3 一般
+            endingId = 1; rankLabel = "S 级认同"; persona = "原教旨主义者"; ringColor = "#00f2ea";
+        }
+    } else {
+        // XB 路径执行其余结局制 (4, 5, 6)
+        if (userData.m2 >= 70 && userData.m3 >= 70) {
+            endingId = 4; rankLabel = "S 级爆款"; persona = "流量收割机"; ringColor = "#7209b7";
+        } else if (userData.m1 >= 70) {
+            endingId = 5; rankLabel = "⚠️ 绝路"; persona = "拙劣模仿者"; ringColor = "#ff4d4d";
+        } else {
+            endingId = 6; rankLabel = "中庸局"; persona = "随大流者"; ringColor = "#888";
+        }
+    }
+
+    // [关键修复] 将局部计算的结局 ID 同步到全局数据
+    userData.ending = {
+        id: endingId,
+        name: rankLabel,
+        color: ringColor
+    };
+
+    // 注入官方评价 (P11 重构版)
+    const scoreNum = document.getElementById('i-total-score');
+    const personaEl = document.getElementById('i-persona-label');
+    const identityGlow = document.getElementById('i-identity-glow');
+
+    if (scoreNum) scoreNum.textContent = rankLabel;
+    if (personaEl) personaEl.textContent = `匹配生态位：${persona}`;
+
+    // 动态调整极光颜色
+    if (identityGlow) {
+        identityGlow.style.background = `radial-gradient(circle, ${ringColor} 0%, transparent 70%)`;
+    }
+
+    // --- [修复] 路径逻辑还原与染色 ---
+    const visual = document.getElementById('i-path-visual');
+    const nl1 = document.getElementById('nl-1');
+    const nl2 = document.getElementById('nl-2');
+    const nl3 = document.getElementById('nl-3');
+    const pathDesc = document.getElementById('i-path-desc');
+
+    if (visual) {
+        if (isXA) {
+            visual.classList.add('path-xa');
+            visual.classList.remove('path-xb');
+            if (nl1) nl1.textContent = "心理共鸣";
+            if (nl2) nl2.textContent = "基因复刻度";
+            if (nl3) nl3.textContent = "圈层认同";
+            if (pathDesc) pathDesc.textContent = "系统分析显示：您的成功源于对模因深度情感内核的精准捕捉。";
+        } else {
+            visual.classList.add('path-xb');
+            visual.classList.remove('path-xa');
+            if (nl1) nl1.textContent = "平台驱动";
+            if (nl2) nl2.textContent = "视觉变异度";
+            if (nl3) nl3.textContent = "算法破圈";
+            if (pathDesc) pathDesc.textContent = "系统分析显示：您的成功源于对视觉符号的大胆变异与流量博弈。";
+        }
+    }
+
+    // 更新匹配标签
+    const matchTag = document.getElementById('i-match-ending-tag');
+    if (matchTag) {
+        matchTag.innerHTML = `<i class="fa-solid fa-link mr-5"></i>已锁定生态位：结局 ${endingId}`;
+    }
+
+    // --- AI 诊断建议矩阵 (结局对齐版) ---
+    const ADVICE_LIB = {
+        1: "评价：您是完美的高还原达人。圈子里的人非常认可您的这种“原汁原味”，老粉丝很买账。建议：继续深挖这种垂直的还原感。",
+        2: "警告：您这次改得有些“串味”了。虽然看着新鲜，但把原本最动人的内核弄丢了，老粉丝可能要取关。建议：找回原梗的灵魂。",
+        3: "祝贺：您简直是天才！既完整保留了原梗的神韵，又让算法非常喜欢。建议：就按这个节奏拍，这就是您的财富密码。",
+        4: "厉害：您是天生的流量玩家。您这种大胆的反差设计完全抓住了算法的胃口，很容易出爆款。建议：把这种大胆变样发扬光大。",
+        5: "警告：您在盲目搬运。这种没有任何亮点的模仿在流量池里活不过第一轮。建议：赶紧加点您自己的创新，别再死板复刻了。",
+        6: "评价：您的内容太寻常了。哪方面都一般，没有让人眼前一亮的燃点。建议：别再追求均衡，选一个极端点使劲发力。"
+    };
+
+    const mainAdvice = ADVICE_LIB[endingId];
+
+    // --- 填充建议 ---
+    const adviceEl = document.getElementById('i-advice-text');
+    if (adviceEl) {
+        adviceEl.innerHTML = `<span class="badge ${isXA ? 'bg-blue' : 'bg-purple'} mb-10">AI 原理诊断</span><br>${mainAdvice}`;
+    }
+
+    // --- 4. 生成动态小贴士 (Tips) ---
+    const tipsList = document.getElementById('i-tips-list');
+    if (tipsList) tipsList.innerHTML = ''; // 清空旧数据
+
+    const addTip = (title, content, icon, delay) => {
+        const item = document.createElement('div');
+        item.className = 'tip-item';
+        item.style.animationDelay = `${delay}s`;
+        item.innerHTML = `
+            <div class="tip-icon"><i class="fa-solid ${icon}"></i></div>
+            <div class="tip-content">
+                <h4>${title}</h4>
+                <p>${content}</p>
+            </div>
+        `;
+        tipsList.appendChild(item);
+    };
+
+    // 根据因子数值给出具体建议
+    let delay = 0.5;
+    if (isXA && userData.m1 < 60) {
+        addTip("警惕内核流失", "既然想引发情感共鸣，建议不要改动太多。保留核心的专属BGM和标志性场景动作，避免作品变味。", "fa-magnifying-glass-chart", delay);
+        delay += 0.2;
+    }
+    if (!isXA && userData.m2 < 60) {
+        addTip("打破视觉平庸", "您的内容现在就是一张“大众脸”，算法看都不看一眼。建议下次改得更“夸张”一点，搞个身份大反转或者换个怪场景，让大家一眼就记住您。", "fa-volcano", delay);
+        delay += 0.2;
+    }
+    if (userData.m3 < 50) {
+        addTip("算法辅助不可少", "哪怕内容再好，平台规则的利用还有待加强。适时埋设吐槽点，能显著提升分发量。", "fa-hashtag", delay);
+        delay += 0.2;
+    }
+
+    // [关键同步] 传递官方评价标签至后续模块
+    renderScriptAssist(isXA, endingId);
+    syncShareCard(rankLabel);
+    syncEcologicalEnding(rankLabel, isXA);
+}
+
+function syncEcologicalEnding(rank, isXA) {
+    // 1. 清除旧的高亮
+    document.querySelectorAll('.ending-card').forEach(c => c.classList.remove('active-ending'));
+
+    // 2. 获取 M 数据进行细分判定 (基于 renderIntuitiveResults 逻辑)
+    const m1 = userData.m1;
+    const m2 = userData.m2;
+    const m3 = userData.m3;
+    let endingId = 0;
+
+    if (isXA) {
+        if (m1 < 70) endingId = 2;
+        else if (m3 >= 70) endingId = 3;
+        else endingId = 1;
+    } else {
+        if (m2 >= 70 && m3 >= 70) endingId = 4;
+        else if (m1 >= 70) endingId = 5;
+        else endingId = 6;
+    }
+
+    // 3. 动态更新 UI (修复空格问题)
+    const targetCard = document.getElementById(`ending-card-${endingId}`);
+    const targetBadge = document.getElementById(`ending-badge-${endingId}`);
+
+    if (targetCard && targetBadge) {
+        targetCard.classList.add('active-ending');
+        targetBadge.textContent = `${rank}：匹配成功`;
+        targetBadge.style.background = 'var(--primary-color)';
+    }
+
+    // 在 P11 报告页同步简易入口 (修复空格)
+    const matchTag = document.getElementById('i-match-ending-tag');
+    if (matchTag) {
+        const names = ["", "原教旨主义者", "迷失的倒戈者", "外挂社交达人", "顶级流量收割机", "边缘模仿者", "随大流者"];
+        matchTag.textContent = `判定结局：${names[endingId]} (${rank})`;
+    }
+}
+
+// 创作脚本辅助逻辑 (结局强对齐版)
+function renderScriptAssist(isXA, endingId) {
+    const scriptBox = document.getElementById('i-script-area');
+    if (!scriptBox) return;
+
+    // 6 大结局专属策略库 (完全贴合原理模式)
+    const STRATEGY_MAP = {
+        1: "策略方案：既然您擅长还原，就继续走精品路线。下次拍的时候，把原梗的节奏和表情抓得更死一点，稳住您的核心粉丝圈。",
+        2: "策划预警：您这次改得完全“跑偏”了。下次动身拍摄前，先琢磨下原梗为啥火，先把那个“味儿”找回来，再谈创新。",
+        3: "核心执行：您已经摸透了走红的规律。现在不需要大改，只需要保持当前的创作频率。这种稳如泰山的平衡感就是您最大的护城河。",
+        4: "行动建议：您这种大胆魔改就是您的招牌。下次试着找点更夸张、更有视觉反差的身份或场景，把新鲜感拉到最满。",
+        5: "止损建议：赶紧停止纯模仿！这种“影子生活”没前途。下次试着放飞自我，加一个反转或者新元素，让算法注意到您的存在。",
+        6: "破局建议：现在的内容不温不火，大家看一眼就滑走了。下次要么做得特别真、特别还原，要么改得特别猛，必须占一个“最”字才能出圈。"
+    };
+
+    const strategy = STRATEGY_MAP[endingId] || "建议结合模型系数进一步优化内容策略。";
+
+    let html = `
+        <div class="script-card" style="border:none; background: rgba(255,255,255,0.03); padding: 18px; border-radius: 16px;">
+            <h5 class="text-xs font-bold mb-10" style="color: var(--primary-color);">
+                <i class="fa-solid fa-wand-magic-sparkles mr-5"></i> 核心执行策略 (模因演化建议)
+            </h5>
+            <p style="font-size: 13px; line-height: 1.7; color: rgba(255,255,255,0.85); margin:0;">
+                ${strategy}
+            </p>
+        </div>
+        <!-- 删除了原有的学术图谱和实证案例库按钮 -->
+    `;
+
+    scriptBox.innerHTML = html;
+}
+
+function syncShareCard(rank) {
+    const isXA = userData.xa >= userData.xb;
+
+    // 1. 填充等级与基本信息
+    const rankEl = document.getElementById('s-ending-rank');
+    if (rankEl) rankEl.textContent = rank;
+
+    const nameEl = document.getElementById('s-ending-name');
+    if (nameEl) nameEl.textContent = userData.ending.name;
+
+    const serialEl = document.getElementById('s-serial-no');
+    if (serialEl) serialEl.textContent = userData.randomId || `MG-2026-X${Math.floor(Math.random() * 9 + 1)}`;
+
+    // 2. 映射生态人格 (严格对齐原理模式/论文定义)
+    const personaMap = {
+        1: "完美的原教旨主义者",
+        2: "迷失的倒戈者",
+        3: "SSR 全能模因王",
+        4: "极端的流量博弈者",
+        5: "被淹没的影子模仿者",
+        6: "平庸的中庸局内人"
+    };
+    const personaEl = document.getElementById('s-ending-persona');
+    if (personaEl) personaEl.textContent = `生态人格：${personaMap[userData.ending.id] || "模因观察者"}`;
+
+    // 3. 驱动三维能量条
+    const setBar = (id, val) => {
+        const el = document.getElementById(id);
+        if (el) el.style.width = `${val}%`;
+    };
+    setBar('s-bar-m1', userData.m1);
+    setBar('s-bar-m2', userData.m2);
+    setBar('s-bar-m3', userData.m3);
+
+    // 4. 同步白话语录
+    const quoteEl = document.getElementById('s-intuitive-quote');
+    const sourceAdvice = document.getElementById('i-advice-text');
+    if (quoteEl && sourceAdvice) {
+        // 去掉 HTML 标签，仅保留纯文本
+        quoteEl.textContent = sourceAdvice.innerText || sourceAdvice.textContent;
+    }
+
+    // 5. 应用色彩氛围
+    const card = document.getElementById('share-card-area');
+    if (card) {
+        if (isXA) {
+            card.style.borderColor = "rgba(0, 242, 234, 0.3)";
+            card.style.boxShadow = "0 30px 60px rgba(0, 0, 0, 0.5), 0 0 20px rgba(0, 242, 234, 0.1)";
+        } else {
+            card.style.borderColor = "rgba(247, 37, 133, 0.3)";
+            card.style.boxShadow = "0 30px 60px rgba(0, 0, 0, 0.5), 0 0 20px rgba(247, 37, 133, 0.1)";
+        }
+    }
+}
+
+window.goSharePage = function () {
+    nextPage(12);
+    setTimeout(renderFinalReport, 100);
+}
+function showResultsOld() {
     nextPage(11); // 切换至流程中的第 11 页：核心结果页
 
     // 填充分数与标签 (Y1/Y2)
@@ -775,6 +1205,17 @@ function showResults() {
 
     // 生成建议
     generateAdvice();
+
+    // 直观模式下的特别引导
+    if (isFastMode) {
+        const adviceContainer = document.querySelector('.advice-container');
+        if (adviceContainer) {
+            const hint = document.createElement('div');
+            hint.className = 'intuitive-mode-hint mt-10 text-accent font-bold';
+            hint.innerHTML = '<i class="fa-solid fa-sparkles mr-5"></i> 诊断已完成！已为您精简掉复杂的学术指标，请点击下方保存报告。';
+            adviceContainer.prepend(hint);
+        }
+    }
 }
 
 function renderRadarChart() {
@@ -841,13 +1282,23 @@ function getEnding() {
     const m3 = userData.m3;
 
     if (isXA) {
-        if (m2 >= 60) return { id: 2, name: "迷失自我的倒戈者", badge: "⚠️ 致命失误", color: "text-accent", desc: "你想求认同，手却不受控制去迎合反差。熟人觉得你变味了，你的圈层社交暗号已失效，只留下了虚高的无价值点赞。" };
-        if (m3 >= 70 && m1 > 40) return { id: 3, name: "外挂加持的社交达人", badge: "SSR 全能", color: "text-purple", desc: "你保留了内容的原汁原味，同时熟练运用平台标签与互动机制，成功将圈子里的小众情绪推向了大众高潮。" };
-        return { id: 1, name: "完美的原教旨主义者", badge: "S 级认同", color: "text-blue", desc: "你的高保真复刻唤醒了圈层最深处的情绪记忆。即便你没有引发全网热捧甚至爆红，但你在你的小众群体里已然封神。" };
+        // XA 路径：聚焦 1, 2, 3
+        if (m1 < 70) {
+            return { id: 2, name: "迷失自我的倒戈者", badge: "⚠️ 致命失误", color: "text-accent", desc: "你想求认同，手却不受控制去迎合反差。熟人觉得你变味了，你的圈层社交暗号已失效，内核稳定性 Y2 已丧失。" };
+        } else if (m3 >= 70) {
+            return { id: 3, name: "外挂加持的社交达人", badge: "SSR 全能", color: "text-purple", desc: "极致平衡的高手。保留了模因原汁原味的灵魂，同时利用算法规则实现跨圈层的高效传播，达成了双线走高。" };
+        } else {
+            return { id: 1, name: "完美的原教旨主义者", badge: "S 级认同", color: "text-blue", desc: "你的高保真复刻唤醒了圈层最深处的情绪记忆。即便没有全网大爆，但在垂直领域你已具备极高的心智护城河。" };
+        }
     } else {
-        if (m2 >= 60) return { id: 4, name: "顶级流量收割机", badge: "S 级爆款", color: "text-purple", desc: "极致的职业反差与强烈的叙事重组，完美切中了算法的猎奇机制，你是真正懂流量密码的变种人。" };
-        if (m1 >= 60) return { id: 5, name: "边缘化的拙劣模仿者", badge: "⚠️ 绝路", color: "text-accent", desc: "没有原生圈层的情感加持，却还在死板搬运。这种极度缺乏表现力的敷衍内容，很快就会被一池流量筛选淘汰。" };
-        return { id: 6, name: "平稳的随大流者", badge: "中庸局", color: "text-secondary", desc: "缺乏极致的策略倾斜。所有数据和手段都停留在及格线，偶尔有播放却留不住人，逐渐淹没在短视频的汪洋大海中。" };
+        // XB 路径：聚焦 4, 5, 6
+        if (m2 >= 70 && m3 >= 70) {
+            return { id: 4, name: "顶级流量收割机", badge: "S 级爆款", color: "text-purple", desc: "极致的职业反差与强烈的叙事重组，完美切中了算法的猎奇分发机制，是典型的表现型变异成功案例。" };
+        } else if (m1 >= 70) {
+            return { id: 5, name: "边缘化的拙劣模仿者", badge: "⚠️ 绝路", color: "text-accent", desc: "没有原生圈层的情感加持，却在流量赛道死板搬运。这种缺乏表现型创新的内容，难逃在首轮筛选中被淘汰的命运。" };
+        } else {
+            return { id: 6, name: "平稳的随大流者", badge: "中庸局", color: "text-secondary", desc: "缺乏极致的策略倾斜。所有数据和手段都停留在及格线，偶尔有播放却留不住人，逐渐淹没在短视频的汪洋大海中。" };
+        }
     }
 }
 
@@ -879,10 +1330,10 @@ function populateFinalReport() {
 
     // 生成动态专属流水号与时间戳
     const randomHash = Math.floor(Math.random() * 90000 + 10000);
-    userData.randomId = `MG-${randomHash}-${isXA ? 'A' : 'B'}`;
+    userData.randomId = `MG - ${randomHash} -${isXA ? 'A' : 'B'} `;
 
     const now = new Date();
-    const dateStr = `${now.getFullYear()}.${String(now.getMonth() + 1).padStart(2, '0')}.${String(now.getDate()).padStart(2, '0')}`;
+    const dateStr = `${now.getFullYear()}.${String(now.getMonth() + 1).padStart(2, '0')}.${String(now.getDate()).padStart(2, '0')} `;
     document.getElementById('report-date').textContent = dateStr;
 
     // 初始化化创作者名称
@@ -1056,9 +1507,9 @@ function updateReportID(val) {
     const displayElement = document.getElementById('report-id-tag');
     if (!displayElement) return;
     if (!val || val.trim() === '') {
-        displayElement.textContent = userData.randomId ? `ID: ${userData.randomId}` : 'ID: UNKNOWN';
+        displayElement.textContent = userData.randomId ? `ID: ${userData.randomId} ` : 'ID: UNKNOWN';
     } else {
-        displayElement.textContent = `创作者：${val}`;
+        displayElement.textContent = `创作者：${val} `;
     }
 }
 

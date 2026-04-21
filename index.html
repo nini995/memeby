@@ -24,6 +24,51 @@
     <div id="particles-js" class="background-container bg-vibe-1"></div>
     <div class="main-glass-overlay"></div>
 
+    <!-- 调试工具：全页面标注索引 -->
+    <div id="debug-trigger" class="debug-fab" onclick="window.toggleDebugMenu()">
+        <i class="fa-solid fa-compass"></i>
+    </div>
+    <div id="debug-menu" class="debug-menu-overlay glass-card"
+        style="display:none; z-index: 10000; width: 280px; max-height: 80vh; overflow-y: auto;">
+        <div class="debug-header">
+            <span>页面导航索引 (调试用)</span>
+            <i class="fa-solid fa-xmark" onclick="window.toggleDebugMenu()"></i>
+        </div>
+        <div class="debug-grid" style="display: flex; flex-direction: column; gap: 15px;">
+            <div class="debug-section">
+                <h5 style="color:var(--primary-color); font-size:10px; margin-bottom:5px; opacity:0.8;">— 原理模式 (Theory)
+                    —</h5>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px;">
+                    <button onclick="jumpToPage(1)">P1: 首页</button>
+                    <button onclick="jumpToPage(2)">P2: 模式选择</button>
+                    <button onclick="jumpToPage(3)">P3: 理论架构</button>
+                    <button onclick="jumpToPage(5)">P5: 驱动盲测</button>
+                    <button onclick="jumpToPage(6)">P6: M1复刻度</button>
+                    <button onclick="jumpToPage(7)">P7: M2变异度</button>
+                    <button onclick="jumpToPage(8)">P8: M3适配度</button>
+                    <button onclick="jumpToPage(9)">P9: 报告生成</button>
+                    <button onclick="jumpToPage(10)">P10: 拟合分析</button>
+                    <button onclick="jumpToPage(11)">P11: 诊断大屏</button>
+                    <button onclick="jumpToPage(12)">P12: 进阶建议</button>
+                    <button onclick="jumpToPage(13)">P13: 结局卡带</button>
+
+                </div>
+            </div>
+
+            <div class="debug-section">
+                <h5 style="color:var(--driver-xb-color); font-size:10px; margin-bottom:5px; opacity:0.8;">— 直观模式
+                    (Intuitive) —</h5>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px;">
+                    <button onclick="jumpToPage('6-intuitive')" style="border-color:var(--driver-xb-color)">P6:
+                        体感评议</button>
+                    <button onclick="jumpToPage('11-intuitive')" style="border-color:var(--driver-xb-color)">P11:
+                        简约报告</button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
 
 
     <main class="app-container">
@@ -31,7 +76,7 @@
         <section id="page-1" class="page active">
             <div class="hero-content" id="p1-main-hero">
                 <div class="logo-box animate-up delay-1">
-                    <img src="logo.webp" alt="MemeGravity" class="brand-logo">
+                    <img src="images/logo.webp" alt="MemeGravity" class="brand-logo">
                 </div>
                 <h1 class="main-title animate-up delay-2">
                     <span class="top-line">短视频模仿</span><br>
@@ -39,8 +84,11 @@
                 </h1>
                 <div class="hero-desc glass-card animate-up delay-4">
                     内容发布前的最后一道「评议体检」<br>
-                    <span class="text-xs text-secondary mt-10" style="display: block; opacity: 0.8;">基于 PROCESS
+                    <span class="text-xs text-secondary mt-10 theory-only-hint" style="display: block; opacity: 0.8;">基于
+                        PROCESS
                         中介效应方程，提前预判您的视频会卷入 <strong class="text-accent"><br> 6 种终极生态位</strong> 中的哪一种。</span>
+                    <span class="text-xs text-accent mt-10 mode-intuitive-only"
+                        style="display: none;">通过多维度智能模型，精准预判您的视频会属于哪种流量类型。</span>
                 </div>
                 <div class="bottom-action animate-up delay-4 mt-20">
                     <button class="btn-primary start-btn pulse-btn" onclick="showProfileSetup()">
@@ -55,7 +103,7 @@
                 <h3 class="text-xs text-accent mb-15 text-center"><i class="fa-solid fa-id-card mr-5"></i> 创作者身份锁定</h3>
                 <div class="flex-column align-center">
                     <div class="avatar-uploader-p1" onclick="document.getElementById('avatar-upload').click()">
-                        <img id="avatar-preview" src="logo.webp" alt="Avatar">
+                        <img id="avatar-preview" src="images/logo.webp" alt="Avatar">
                         <div class="upload-hint"><i class="fa-solid fa-camera"></i></div>
                         <input type="file" id="avatar-upload" accept="image/*" style="display:none"
                             onchange="previewAvatar(event)">
@@ -130,11 +178,11 @@
             <div class="bottom-action text-center mt-30 pb-30">
                 <button class="btn-primary-glow w-full max-w-sm mb-15 pulse-btn"
                     onclick="setFastMode(true); nextPage(5)">
-                    <i class="fa-solid fa-bolt-lightning mr-10"></i>跳过理论，直接开启预测
+                    <i class="fa-solid fa-bolt-lightning mr-10"></i>直观模式：快速开启预测
                 </button>
                 <div class="mt-10">
                     <button class="btn-ghost-subtle" onclick="setFastMode(false); nextPage(3)">
-                        解析诊断模型原理与架构 <i class="fa-solid fa-chevron-right ml-5"></i>
+                        原理模式：深度解析诊断模型 <i class="fa-solid fa-chevron-right ml-5"></i>
                     </button>
                 </div>
             </div>
@@ -356,7 +404,7 @@
                         <button class="choice-card xb-card" onclick="selectChoice('xb', 3, event)">
                             <div class="card-content">
                                 <i class="fa-solid fa-chart-line card-icon"></i>
-                                <span class="choice-text">“太像了，复刻得太快了，我也要去拍！”</span>
+                                <span class="choice-text">“太像了，复刻得太像了，关注了！”</span>
                                 <div class="choice-tag">全网引爆 (B)</div>
                             </div>
                         </button>
@@ -406,6 +454,137 @@
             </div>
         </section>
 
+
+        <!-- 页面 6-Intuitive: 直观模式下的简约评议 (极致直观版) -->
+        <section id="page-6-intuitive" class="page intuitive-lab">
+            <div class="page-header text-center animate-up delay-1">
+                <div class="stage-tag mb-10">
+                    <span class="badge"
+                        style="background: rgba(0, 242, 234, 0.1); color: var(--primary-color);">第二阶段：操作行为评议</span>
+                </div>
+                <h2 class="text-gradient">模因「体感」评议</h2>
+                <p>根据您的视频特征，选择最直观的一项描述</p>
+            </div>
+
+            <div class="content-body mt-20 scrollable-content">
+                <!-- 进度条 -->
+                <div class="i-quiz-progress-container mb-30 animate-up delay-2">
+                    <div class="i-progress-bar">
+                        <div class="i-progress-fill" id="i-progress-fill" style="width: 33.33%;"></div>
+                    </div>
+                    <div class="i-progress-steps">
+                        <div class="i-step-node active" id="i-node-1">1</div>
+                        <div class="i-step-node" id="i-node-2">2</div>
+                        <div class="i-step-node" id="i-node-3">3</div>
+                    </div>
+                </div>
+
+                <!-- 维度 1: 复制力 (M1) -> 像不像 -->
+                <div class="i-quiz-step active" id="i-step-1">
+                    <div class="i-question-card glass-card p-20 mb-20 animate-up delay-3">
+                        <h3 class="text-md font-bold mb-5">和原版相比，这视频看起来「像」吗？</h3>
+                    </div>
+
+                    <div class="i-quiz-options flex-column gap-12 animate-up delay-4">
+                        <div class="i-option-card" onclick="selectIntuitive('m1', 20, 1, this)">
+                            <div class="option-icon"><i class="fa-solid fa-ghost"></i></div>
+                            <div class="option-info">
+                                <h4>自成一派 (仅保留精髓)</h4>
+                                <p>除了用了同一个挑战，基本看不出原版样子</p>
+                            </div>
+                        </div>
+                        <div class="i-option-card" onclick="selectIntuitive('m1', 60, 1, this)">
+                            <div class="option-icon"><i class="fa-solid fa-masks-theater"></i></div>
+                            <div class="option-info">
+                                <h4>神似形似 (经典重现)</h4>
+                                <p>BGM和气氛都抓住了，一眼就能认出出处</p>
+                            </div>
+                        </div>
+                        <div class="i-option-card" onclick="selectIntuitive('m1', 100, 1, this)">
+                            <div class="option-icon" style="background: rgba(0, 242, 234, 0.2);"><i
+                                    class="fa-solid fa-dna"></i></div>
+                            <div class="option-info">
+                                <h4>像素级复刻 (基因传承)</h4>
+                                <p>运镜和节拍完美重现，宛如内容复制人</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 维度 2: 变异力 (M2) -> 改得多不多 -->
+                <div class="i-quiz-step" id="i-step-2">
+                    <div class="i-question-card glass-card p-20 mb-20">
+                        <h3 class="text-md font-bold mb-5">您在模仿时，「改」得多吗？</h3>
+                    </div>
+
+                    <div class="i-quiz-options flex-column gap-12">
+                        <div class="i-option-card" onclick="selectIntuitive('m2', 20, 2, this)">
+                            <div class="option-icon"><i class="fa-solid fa-anchor"></i></div>
+                            <div class="option-info">
+                                <h4>保守跟随 (原汁原味)</h4>
+                                <p>尽可能保持原有的场景和身份，不想破坏原味</p>
+                            </div>
+                        </div>
+                        <div class="i-option-card" onclick="selectIntuitive('m2', 60, 2, this)">
+                            <div class="option-icon"><i class="fa-solid fa-user-tag"></i></div>
+                            <div class="option-info">
+                                <h4>身份置换 (老瓶装新酒)</h4>
+                                <p>换成自己的职业或生活场景，有明显的个人印记</p>
+                            </div>
+                        </div>
+                        <div class="i-option-card" onclick="selectIntuitive('m2', 100, 2, this)">
+                            <div class="option-icon"
+                                style="background: rgba(247, 37, 133, 0.2); color: var(--driver-xb-color);"><i
+                                    class="fa-solid fa-wand-magic-sparkles"></i></div>
+                            <div class="option-info">
+                                <h4>脑洞魔改 (视觉破圈)</h4>
+                                <p>刻意进行大幅度反转身份或场景，制造极强的反差视觉</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 维度 3: 算法力 (M3) -> 蹭没蹭热度 -->
+                <div class="i-quiz-step" id="i-step-3">
+                    <div class="i-question-card glass-card p-20 mb-20">
+                        <h3 class="text-md font-bold mb-5">发布时，您有「蹭」热度吗？</h3>
+                    </div>
+
+                    <div class="i-quiz-options flex-column gap-12">
+                        <div class="i-option-card" onclick="selectIntuitive('m3', 20, 3, this)">
+                            <div class="option-icon"><i class="fa-solid fa-leaf"></i></div>
+                            <div class="option-info">
+                                <h4>随缘发布</h4>
+                                <p>不带标签，不看时段，纯粹记录心情和生活</p>
+                            </div>
+                        </div>
+                        <div class="i-option-card" onclick="selectIntuitive('m3', 60, 3, this)">
+                            <div class="option-icon"><i class="fa-solid fa-bullhorn"></i></div>
+                            <div class="option-info">
+                                <h4>借势出击</h4>
+                                <p>挂载了精准的热门话题，选择了活跃的黄金时段</p>
+                            </div>
+                        </div>
+                        <div class="i-option-card" onclick="selectIntuitive('m3', 100, 3, this)">
+                            <div class="option-icon" style="background: rgba(0, 242, 234, 0.2);"><i
+                                    class="fa-solid fa-rocket"></i></div>
+                            <div class="option-info">
+                                <h4>算法利器</h4>
+                                <p>各种热门话题和标签全都安排上，并且在未来有打算投入抖＋，把算法的胃口喂得饱饱的</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 加载提示 -->
+                <div id="i-analysis-hint" class="i-analysis-overlay" style="display: none;">
+                    <div class="loader-box">
+                        <div class="loader-ring"></div>
+                        <p class="mt-15">基于模因引力数学模型<br>正在为您进行深度路径拟合...</p>
+                    </div>
+                </div>
+            </div>
+        </section>
 
         <!-- 页面 6: 基因型复刻度评议 (M1) -->
         <section id="page-6" class="page">
@@ -657,7 +836,8 @@
         <section id="page-11" class="page">
             <div class="page-header animate-up delay-1">
                 <h2>短视频预测报告</h2>
-                <p>基于中介效应模型 (Mediation Model) 实时运算结果</p>
+                <p class="theory-only-hint">基于中介效应模型 (Mediation Model) 实时运算结果</p>
+                <p class="mode-intuitive-only">深度挖掘内容潜力，助力精准分发</p>
             </div>
 
             <div class="dashboard-grid mb-20 animate-up delay-2">
@@ -671,7 +851,7 @@
                             </div>
                         </div>
                         <div class="score-item text-right clickable-score" onclick="showScoreDetail('y1')">
-                            <span class="score-value text-accent" id="y1-score">--</span>
+                            <span class="score-value" id="y1-score">--</span>
                             <div class="label-xs mt-5">表现型躯壳满意 (Y1) <i class="fa-solid fa-circle-info opacity-30"></i>
                             </div>
                         </div>
@@ -730,14 +910,91 @@
                         <i class="fa-solid fa-unlock-keyhole mr-5"></i> 查看深度诊断图谱 (原理模式)
                     </button>
                 </div>
-                <button class="btn-primary-glow w-full" onclick="nextPage(12)">
+                <button class="btn-primary-glow w-full" onclick="window.goSharePage()">
                     保存为深度诊断海报 <i class="fa-solid fa-file-export ml-10"></i>
                 </button>
             </div>
         </section>
 
+        <!-- 页面 11-Intuitive: 直观模式专享简约报告 -->
+        <section id="page-11-intuitive" class="page intuitive-report">
+            <div class="page-header text-center animate-up delay-1">
+                <h2 class="text-gradient">影响力鉴定报告</h2>
+                <p>— 已锁定您的内容基因路径 —</p>
+            </div>
 
-        <!-- 页面 12: 极致专业长图报告 (Final Premium Report) -->
+            <div class="content-body mt-20 scrollable-content pb-100">
+                <!-- 核心：生态身份勋章 (重构版) -->
+                <div class="luxury-identity-box animate-up delay-2">
+                    <div class="identity-card-inner">
+                        <div class="identity-badge-glow" id="i-identity-glow"></div>
+                        <div class="identity-content">
+                            <div class="identity-prefix">模因生态位锁定</div>
+                            <h1 class="identity-title" id="i-total-score">SSR 全能</h1>
+                            <div class="identity-subtitle" id="i-persona-label">匹配身份：核心达人</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center mb-20 animate-up delay-2">
+                    <div id="i-match-ending-tag" class="badge"
+                        style="background: rgba(0, 242, 234, 0.1); border: 1px solid rgba(0, 242, 234, 0.3); color: var(--primary-color); padding: 6px 15px; font-size: 11px;">
+                        计算模因生态位中...</div>
+                </div>
+
+
+                <!-- 策略路径可视化 (新加入) -->
+                <div class="i-path-card glass-card p-20 animate-up delay-4 mb-20">
+                    <h3 class="text-sm mb-15"><i class="fa-solid fa-route text-primary mr-5"></i> 您的爆款进化路径</h3>
+                    <div class="i-path-visual" id="i-path-visual">
+                        <div class="path-node">
+                            <div class="node-icon" id="nd-1"><i class="fa-solid fa-heart"></i></div>
+                            <span id="nl-1">情感驱动</span>
+                        </div>
+                        <div class="path-connector"></div>
+                        <div class="path-node">
+                            <div class="node-icon" id="nd-2"><i class="fa-solid fa-dna"></i></div>
+                            <span id="nl-2">极致复制</span>
+                        </div>
+                        <div class="path-connector"></div>
+                        <div class="path-node outcome">
+                            <div class="node-icon" id="nd-3"><i class="fa-solid fa-gem"></i></div>
+                            <span id="nl-3">粉丝共鸣</span>
+                        </div>
+                    </div>
+                    <p class="text-xs text-secondary mt-15 opacity-80" id="i-path-desc">
+                        系统分析显示：您更依仗“情感共鸣”来获客，这是一种长期的社交资产累积路径。</p>
+                </div>
+
+                <!-- 进阶锦囊 (新加入) -->
+                <div class="i-advice-box glass-card p-20 animate-up delay-5">
+                    <h3 class="text-sm mb-10"><i class="fa-solid fa-wand-magic-sparkles text-accent mr-5"></i> 创作者进阶锦囊
+                    </h3>
+                    <p id="i-advice-text" class="text-xs text-secondary line-height-lg mb-15">正在生成建议...</p>
+                    <div class="i-tips-list" id="i-tips-list">
+                        <!-- 动态插入改进项 -->
+                    </div>
+
+                    <!-- [新增] 创作脚本辅助区域 -->
+                    <div id="i-script-area">
+                        <!-- 由 renderScriptAssist 动态填充 -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="bottom-action mt-auto flex-column gap-10">
+                <button class="btn-primary-glow w-full" onclick="window.goSharePage()">
+                    保存最终鉴定海报 <i class="fa-solid fa-download ml-10"></i>
+                </button>
+                <button class="btn-ghost-subtle" onclick="unlockTheoryMode()">
+                    开启学术原理模式 <i class="fa-solid fa-microscope ml-5"></i>
+                </button>
+            </div>
+        </section>
+
+
+
+        <!-- 原有的页面 12: 极致专业长图报告 (Final Premium Report) -->
         <section id="page-12" class="page">
             <div class="page-header animate-up delay-1">
                 <h2>模因诊断书</h2>
@@ -754,7 +1011,7 @@
                             <div class="id-tag text-primary" id="report-id-tag">ID: MG-2026-X8</div>
                             <div class="date-tag" id="report-date">2026.04.07</div>
                         </div>
-                        <img src="logo.webp" alt="Logo" class="report-custom-avatar" id="report-avatar">
+                        <img src="images/logo.webp" alt="Logo" class="report-custom-avatar" id="report-avatar">
                     </div>
 
                     <!-- Section 1: Driver Profile -->
@@ -835,10 +1092,11 @@
                     <h3 class="mb-10 text-sm border-b pb-5 text-blue"><i class="fa-solid fa-heart-pulse mr-5"></i> 驱动力
                         A：心理驱动 (XA)</h3>
 
-                    <div class="glass-card p-15 mb-10 border-l-blue">
+                    <div class="glass-card p-15 mb-10 border-l-blue ending-card" id="ending-card-1">
                         <div class="flex-between mb-5">
                             <span class="font-bold text-sm">结局 1：完美的原教旨主义者</span>
-                            <span class="badge bg-blue text-xs" style="-webkit-text-fill-color:white">S 级认同</span>
+                            <span class="badge bg-blue text-xs" id="ending-badge-1"
+                                style="-webkit-text-fill-color:white">S 级认同</span>
                         </div>
                         <div class="text-xs text-secondary mb-5"><b>公式配置：</b>M1(复刻)极高 / M2(魔改)极低</div>
                         <div class="text-xs opacity-80" style="line-height:1.5">
@@ -846,10 +1104,11 @@
                         </div>
                     </div>
 
-                    <div class="glass-card p-15 mb-10 border-l-red">
+                    <div class="glass-card p-15 mb-10 border-l-red ending-card" id="ending-card-2">
                         <div class="flex-between mb-5">
                             <span class="font-bold text-sm">结局 2：迷失自我的倒戈者</span>
-                            <span class="badge bg-red text-xs" style="-webkit-text-fill-color:white">⚠️ 致命失误</span>
+                            <span class="badge bg-red text-xs" id="ending-badge-2"
+                                style="-webkit-text-fill-color:white">⚠️ 致命失误</span>
                         </div>
                         <div class="text-xs text-secondary mb-5"><b>公式配置：</b>M1(复刻)极低 / M2(魔改)极高</div>
                         <div class="text-xs opacity-80" style="line-height:1.5">
@@ -857,10 +1116,11 @@
                             跌入谷底。</div>
                     </div>
 
-                    <div class="glass-card p-15 mb-10 border-l-purple">
+                    <div class="glass-card p-15 mb-10 border-l-purple ending-card" id="ending-card-3">
                         <div class="flex-between mb-5">
                             <span class="font-bold text-sm">结局 3：外挂加持的社交达人</span>
-                            <span class="badge bg-purple text-xs" style="-webkit-text-fill-color:white">SSR 全能</span>
+                            <span class="badge bg-purple text-xs" id="ending-badge-3"
+                                style="-webkit-text-fill-color:white">SSR 全能</span>
                         </div>
                         <div class="text-xs text-secondary mb-5"><b>公式配置：</b>平衡操作 + M3(算法)拉满</div>
                         <div class="text-xs opacity-80" style="line-height:1.5">
@@ -874,10 +1134,11 @@
                     <h3 class="mb-10 text-sm border-b pb-5 text-purple"><i class="fa-solid fa-bolt-lightning mr-5"></i>
                         驱动力 B：平台驱动 (XB)</h3>
 
-                    <div class="glass-card p-15 mb-10 border-l-purple">
+                    <div class="glass-card p-15 mb-10 border-l-purple ending-card" id="ending-card-4">
                         <div class="flex-between mb-5">
                             <span class="font-bold text-sm">结局 4：顶级流量收割机</span>
-                            <span class="badge bg-purple text-xs" style="-webkit-text-fill-color:white">S 级爆款</span>
+                            <span class="badge bg-purple text-xs" id="ending-badge-4"
+                                style="-webkit-text-fill-color:white">S 级爆款</span>
                         </div>
                         <div class="text-xs text-secondary mb-5"><b>公式配置：</b>M1(复刻)极低 / M2(魔改)极高 + M3拉满</div>
                         <div class="text-xs opacity-80" style="line-height:1.5">
@@ -885,10 +1146,11 @@
                         </div>
                     </div>
 
-                    <div class="glass-card p-15 mb-10 border-l-red">
+                    <div class="glass-card p-15 mb-10 border-l-red ending-card" id="ending-card-5">
                         <div class="flex-between mb-5">
                             <span class="font-bold text-sm">结局 5：边缘化的拙劣模仿者</span>
-                            <span class="badge bg-red text-xs" style="-webkit-text-fill-color:white">⚠️ 绝路</span>
+                            <span class="badge bg-red text-xs" id="ending-badge-5"
+                                style="-webkit-text-fill-color:white">⚠️ 绝路</span>
                         </div>
                         <div class="text-xs text-secondary mb-5"><b>公式配置：</b>M1(复刻)极高 / M2(魔改)极低</div>
                         <div class="text-xs opacity-80" style="line-height:1.5">
@@ -896,10 +1158,10 @@
                         </div>
                     </div>
 
-                    <div class="glass-card p-15 mb-10 border-l-gray">
+                    <div class="glass-card p-15 mb-10 border-l-gray ending-card" id="ending-card-6">
                         <div class="flex-between mb-5">
                             <span class="font-bold text-sm">结局 6：平稳的随大流者</span>
-                            <span class="badge text-xs"
+                            <span class="badge text-xs" id="ending-badge-6"
                                 style="background:#555; -webkit-text-fill-color:white">中庸局</span>
                         </div>
                         <div class="text-xs text-secondary mb-5"><b>公式配置：</b>M1/M2 五五开，M3 中等</div>
@@ -914,10 +1176,13 @@
                         class="fa-solid fa-arrow-left mr-5"></i> 返回我的个人诊断鉴定书</button>
             </div>
         </section>
+
+
     </main>
 
-    <!-- 粒子特效与主逻辑控制脚本 -->
+    <!-- 核心可视化库 -->
     <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="app.js?v=debug"></script>
 
     <div id="path-tooltip" class="path-tooltip">仅平台驱动显著</div>
