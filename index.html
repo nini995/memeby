@@ -24,50 +24,7 @@
     <div id="particles-js" class="background-container bg-vibe-1"></div>
     <div class="main-glass-overlay"></div>
 
-    <!-- 调试工具：全页面标注索引 -->
-    <div id="debug-trigger" class="debug-fab" onclick="window.toggleDebugMenu()">
-        <i class="fa-solid fa-compass"></i>
-    </div>
-    <div id="debug-menu" class="debug-menu-overlay glass-card"
-        style="display:none; z-index: 10000; width: 280px; max-height: 80vh; overflow-y: auto;">
-        <div class="debug-header">
-            <span>页面导航索引 (调试用)</span>
-            <i class="fa-solid fa-xmark" onclick="window.toggleDebugMenu()"></i>
-        </div>
-        <div class="debug-grid" style="display: flex; flex-direction: column; gap: 15px;">
-            <div class="debug-section">
-                <h5 style="color:var(--primary-color); font-size:10px; margin-bottom:5px; opacity:0.8;">— 原理模式 (Theory)
-                    —</h5>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px;">
-                    <button onclick="jumpToPage(1)">P1: 首页</button>
-                    <button onclick="jumpToPage(2)">P2: 模式选择</button>
-                    <button onclick="jumpToPage(3)">P3: 理论架构</button>
-                    <button onclick="jumpToPage(5)">P5: 驱动盲测</button>
-                    <button onclick="jumpToPage(6)">P6: M1复刻度</button>
-                    <button onclick="jumpToPage(7)">P7: M2变异度</button>
-                    <button onclick="jumpToPage(8)">P8: M3适配度</button>
-                    <button onclick="jumpToPage(9)">P9: 报告生成</button>
-                    <button onclick="jumpToPage(10)">P10: 拟合分析</button>
-                    <button onclick="jumpToPage(11)">P11: 诊断大屏</button>
-                    <button onclick="jumpToPage(12)">P12: 进阶建议</button>
-                    <button onclick="jumpToPage(13)">P13: 结局卡带</button>
 
-                </div>
-            </div>
-
-            <div class="debug-section">
-                <h5 style="color:var(--driver-xb-color); font-size:10px; margin-bottom:5px; opacity:0.8;">— 直观模式
-                    (Intuitive) —</h5>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:6px;">
-                    <button onclick="jumpToPage('6-intuitive')" style="border-color:var(--driver-xb-color)">P6:
-                        体感评议</button>
-                    <button onclick="jumpToPage('11-intuitive')" style="border-color:var(--driver-xb-color)">P11:
-                        简约报告</button>
-
-                </div>
-            </div>
-        </div>
-    </div>
 
 
 
